@@ -23,12 +23,15 @@
 "note"            return 'note';
 "title"           return 'title';
 ","               return ',';
-[^\->:\n,]+       return 'ACTOR';
+\[[^\->:\n,\[\]]+\]   return 'URL';
+[^\->:\n,\[\]]+   return 'ACTOR';
 "--"              return 'DOTLINE';
 "-"               return 'LINE';
 ">>"              return 'OPENARROW';
 ">"               return 'ARROW';
-:[^#\n]+          return 'MESSAGE';
+"["               return 'OPENBRAKET';
+"]"               return 'CLOSEBRAKET';
+:[^#\n\[\]]+      return 'MESSAGE';
 <<EOF>>           return 'EOF';
 .                 return 'INVALID';
 
@@ -75,9 +78,15 @@ placement
 	;
 
 signal
-	: actor signaltype actor message
-	{ $$ = new Diagram.Signal($1, $2, $3, $4); }
+	: actor signaltype actor message url
+	{ $$ = new Diagram.Signal($1, $2, $3, $4, $5); }
+	| actor signaltype actor message
+      	{ $$ = new Diagram.Signal($1, $2, $3, $4); }
 	;
+
+url
+    : URL{ $$ = $1.substring(1, $1.length-1); }
+    ;
 
 actor
 	: ACTOR { $$ = yy.getActor($1); }

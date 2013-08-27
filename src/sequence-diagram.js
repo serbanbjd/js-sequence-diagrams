@@ -476,7 +476,26 @@
 			var y = offsetY + SIGNAL_MARGIN + 2*SIGNAL_PADDING;
 
 			// Draw the text in the middle of the signal
-			this.draw_text(x, y, signal.message, this._font);
+            var t = this.draw_text(x, y, signal.message, this._font);
+
+            if (signal.url) {
+                t.url = signal.url;
+                t.click(function() {
+                    jQuery.get(this.url, function(data) {
+                        jQuery('#diagram').text(data).sequenceDiagram({theme : 'hand'});
+                    });
+                    console.log(this.url);
+                });
+                t.hover(function(){
+                    this.attr({cursor : 'pointer'});
+                });
+                t.unhover(function(){
+                    this.attr({cursor : 'default'});
+                });
+
+            }
+
+
 
 			// Draw the line along the bottom of the signal
 			y = offsetY + signal.height - SIGNAL_MARGIN - SIGNAL_PADDING;
@@ -535,12 +554,15 @@
 				t = paper.text(x, y, text);
 				t.attr(f);
 			}
+
 			// draw a rect behind it
 			var bb = t.getBBox();
 			var r = paper.rect(bb.x, bb.y, bb.width, bb.height);
 			r.attr({'fill': "#fff", 'stroke': 'none'});
 
 			t.toFront();
+
+            return r;
 		},
 
 		draw_text_box : function (box, text, margin, padding, font) {
