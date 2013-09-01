@@ -351,6 +351,11 @@
 
 						return; // Bail out early
 					}
+                } else if (s.type == "Activate" || s.type == "Deactivate") {
+                    s.width  += (SIGNAL_MARGIN + SIGNAL_PADDING) * 2;
+                    s.height += 2;
+                    a = s.actor.index;
+                    b = a + 1;
 				} else {
 					throw new Error("Unhandled signal type:" + s.type);
 				}
@@ -427,14 +432,32 @@
 					} else {
 						this.draw_signal(s, y);
 					}
-
 				} else if (s.type == "Note") {
 					this.draw_note(s, y);
-				}
+				} else if (s.type == "Activate") {
+                    this.draw_activations(s, y);
+                } else if (s.type == "Deactivate") {
+                    this.draw_activations(s, y);
+                } else {
+                    return;
+                }
 
 				y += s.height;
 			}, this);
 		},
+
+        draw_activations : function(activate, offsetY) {
+            var y = activate.y = offsetY;
+            var actorA = activate.actor;
+            var aX = getCenterX( actorA ) - 3;
+            var bX = getCenterX( actorA ) + 3;
+            activate.x = aX - activate.width / 2;
+
+            var line = this.draw_line(aX, y, bX, y);
+            line.attr(LINE);
+            line.attr({
+            });
+        },
 
 		draw_self_signal : function(signal, offsetY) {
 			assert(signal.isSelf(), "signal must be a self signal");
@@ -466,6 +489,7 @@
 			attr['arrow-end'] = this.arrow_types[signal.arrowtype] + '-wide-long';
 			line.attr(attr);
 		},
+
 
 		draw_signal : function (signal, offsetY) {
 			var aX = getCenterX( signal.actorA );

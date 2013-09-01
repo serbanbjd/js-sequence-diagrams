@@ -22,6 +22,8 @@
 "over"            return 'over';
 "note"            return 'note';
 "title"           return 'title';
+"activate"        return 'activate';
+"deactivate"      return 'deactivate';
 ","               return ',';
 [^\->:\n,]+       return 'ACTOR';
 "--"              return 'DOTLINE';
@@ -57,6 +59,8 @@ statement
 	| signal               { yy.addSignal($1); }
 	| note_statement       { yy.addSignal($1); }
 	| 'title' message      { yy.setTitle($2);  }
+	| activate_actor     { yy.addSignal($1);}
+	| deactivate_actor   { yy.addSignal($1);}
 	;
 
 note_statement
@@ -82,6 +86,15 @@ signal
 actor
 	: ACTOR { $$ = yy.getActor($1); }
 	;
+
+activate_actor
+    : 'activate' actor {$$ = new Diagram.Activate($2);}
+    ;
+
+deactivate_actor
+    : 'deactivate' actor {$$ = new Diagram.Deactivate($2);}
+    ;
+
 
 signaltype
 	: linetype arrowtype  { $$ = $1 | ($2 << 2); }

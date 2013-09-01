@@ -11,6 +11,8 @@
 		this.title   = undefined;
 		this.actors  = [];
 		this.signals = [];
+        this.activate = [];
+        this.deactivate = [];
 	}
 
 	Diagram.prototype.getActor = function(alias) {
@@ -41,6 +43,14 @@
 		this.signals.push( signal );
 	};
 
+    Diagram.prototype.addActivate = function(activate) {
+        this.activate.push( activate );
+    };
+
+    Diagram.prototype.addDeactivate = function(deactivate) {
+        this.deactivate.push( deactivate );
+    };
+
 	Diagram.Actor = function(alias, name, index) {
 		this.alias = alias;
 		this.name  = name;
@@ -55,6 +65,16 @@
 		this.arrowtype  = (signaltype >> 2) & 3;
 		this.message    = message;
 	};
+
+    Diagram.Activate = function(actor) {
+        this.type = 'Activate';
+        this.actor = actor;
+    };
+
+    Diagram.Deactivate = function(actor) {
+        this.type = 'Deactivate';
+        this.actor = actor;
+    };
 
 	Diagram.Signal.prototype.isSelf = function() {
 		return this.actorA.index == this.actorB.index;
